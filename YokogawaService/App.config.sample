@@ -1,4 +1,6 @@
-﻿/*
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!--
    Copyright 2017 University of Michigan
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,25 +13,17 @@
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
-   limitations under the License. 
-*/
+   limitations under the License.
+-->
 
-using Microsoft.Owin;
-using Owin;
-using System.Web.Http;
+<configuration>
+  <configSections>
+    <section name="yokogawasvc" type="YokogawaService.YokogawaServiceConfigSection, YokogawaService" />
+  </configSections>
 
-[assembly: OwinStartup(typeof(YokogawaService.Startup))]
+  <yokogawasvc folderPath="C:\yokogawa" serviceUrl="http://127.0.0.1:23032" connectionString="xxxxx" />
 
-namespace YokogawaService
-{
-    public class Startup
-    {
-        public void Configuration(IAppBuilder app)
-        {
-            HttpConfiguration config = new HttpConfiguration();
-            config.MapHttpAttributeRoutes();
-            app.UseWebApi(config);
-            config.EnsureInitialized();
-        }
-    }
-}
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.2" />
+  </startup>
+</configuration>

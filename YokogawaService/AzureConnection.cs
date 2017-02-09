@@ -14,22 +14,20 @@
    limitations under the License. 
 */
 
-using Microsoft.Owin;
-using Owin;
-using System.Web.Http;
-
-[assembly: OwinStartup(typeof(YokogawaService.Startup))]
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace YokogawaService
 {
-    public class Startup
+    public class AzureConnection
     {
-        public void Configuration(IAppBuilder app)
+        public CloudTable Table { get; }
+
+        public AzureConnection()
         {
-            HttpConfiguration config = new HttpConfiguration();
-            config.MapHttpAttributeRoutes();
-            app.UseWebApi(config);
-            config.EnsureInitialized();
-        }
+            var acct = CloudStorageAccount.Parse(Config.Current.ConnectionString);
+            var tableClient = acct.CreateCloudTableClient();
+            Table = tableClient.GetTableReference("yokogawasvc");
+        }  
     }
 }
