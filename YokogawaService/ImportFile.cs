@@ -14,28 +14,24 @@
    limitations under the License. 
 */
 
-using Microsoft.Owin;
-using Owin;
-using System.Web.Http;
-using Swashbuckle.Application;
-
-[assembly: OwinStartup(typeof(YokogawaService.Startup))]
+using MongoDB.Bson;
+using System;
+using YokogawaService.Models;
 
 namespace YokogawaService
 {
-    public class Startup
+    public class ImportFile
     {
-        public void Configuration(IAppBuilder app)
-        {
-            HttpConfiguration config = new HttpConfiguration();
+        public ObjectId Id { get; set; }
 
-            config
-                .EnableSwagger(c => c.SingleApiVersion("v1", "YokogawaService API"))
-                .EnableSwaggerUi();
+        public int Index { get; set; }
 
-            config.MapHttpAttributeRoutes();
-            app.UseWebApi(config);
-            config.EnsureInitialized();
-        }
+        public string FilePath { get; set; }
+
+        public DateTime ImportDate { get; set; }
+
+        public SampleGranularity Granularity { get; set; }
+
+        public int LineCount { get; set; }
     }
 }

@@ -40,5 +40,12 @@ namespace YokogawaService
             get { return (string)this["folderPath"]; }
             set { this["folderPath"] = value; }
         }
+
+        [ConfigurationProperty("headerPattern", IsRequired = true)]
+        public string HeaderPattern
+        {
+            get { return (string)this["headerPattern"]; }
+            set { this["headerPattern"] = value; }
+        }
     }
 }

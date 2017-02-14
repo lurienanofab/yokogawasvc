@@ -17,9 +17,11 @@
 using Microsoft.Owin.Hosting;
 using System;
 using System.Configuration.Install;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
+using System.Threading;
 
 namespace YokogawaService
 {
@@ -29,6 +31,12 @@ namespace YokogawaService
 
         private IDisposable _webapp;
 
+        private Timer _timer;
+
+        private static object _lockerObject = new object();
+
+        private static int _nextIndex;
+
         public Service1()
         {
             InitializeComponent();
@@ -37,10 +45,65 @@ namespace YokogawaService
         protected override void OnStart(string[] args)
         {
             _webapp = WebApp.Start<Startup>(Config.Current.ServiceUrl);
+
+            if (!Directory.Exists(Config.Current.FolderPath))
+                Directory.CreateDirectory(Config.Current.FolderPath);
+
+            var filesController = new Controllers.FilesController();
+            _nextIndex = filesController.GetNextIndex();
+            Program.Log("[timer] next index: {0}", _nextIndex);
+
+            _timer = new Timer(new TimerCallback(TimeElapsed), null, 0, 10000);
+        }
+
+        private void TimeElapsed(object stateInfo)
+        {
+            if (Monitor.TryEnter(_lockerObject))
+            {
+                try
+                {
+                    var yokoFile = FileUtility.GetFile(_nextIndex);
+
+                    if (yokoFile != null)
+                    {
+                        Program.Log("[timer] next file: {0}", Path.GetFileName(yokoFile.FilePath));
+                        var filesController = new Controllers.FilesController();
+                        var model = filesController.ImportNextFile();
+
+                        if (model.LineCount == 0)
+                        {
+                            // happens when there is no data found in the file
+                            Program.Log("[timer] no data found");
+                        }
+                        else
+                        {
+                            Program.Log("[timer] imported: {0} lines", model.LineCount);
+                        }
+
+                        _nextIndex += 1;
+
+                        Program.Log("[timer] next index: {0}", _nextIndex);
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(_lockerObject);
+                }
+            }
+        }
+
+        public static void SetNextIndex(int value)
+        {
+            lock (_lockerObject)
+            {
+                _nextIndex = value;
+            }
         }
 
         protected override void OnStop()
         {
+            _webapp.Dispose();
+            _timer.Dispose();
         }
 
         public void Start(string[] args)

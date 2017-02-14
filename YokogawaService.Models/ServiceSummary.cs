@@ -14,20 +14,15 @@
    limitations under the License. 
 */
 
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
-
-namespace YokogawaService
+namespace YokogawaService.Models
 {
-    public class AzureConnection
+    public class ServiceSummary
     {
-        public CloudTable Table { get; }
-
-        public AzureConnection()
-        {
-            var acct = CloudStorageAccount.Parse(Config.Current.ConnectionString);
-            var tableClient = acct.CreateCloudTableClient();
-            Table = tableClient.GetTableReference("yokogawasvc");
-        }  
+        public long TotalFiles { get; set; }
+        public long TotalImports { get; set; }
+        public long TotalDataRecords { get; set; }
+        public YokogawaFile LastFile { get; set; }
+        public ImportFileModel LastImport { get; set; }
+        public int CurrentIndex { get; set; }
     }
 }

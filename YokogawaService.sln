@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YokogawaService", "YokogawaService\YokogawaService.csproj", "{79931E72-D274-404D-A774-9948D07B3E0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YokogawaService.Models", "YokogawaService.Models\YokogawaService.Models.csproj", "{502FC686-46A8-4CEC-A171-1F865E79526F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{79931E72-D274-404D-A774-9948D07B3E0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79931E72-D274-404D-A774-9948D07B3E0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79931E72-D274-404D-A774-9948D07B3E0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{502FC686-46A8-4CEC-A171-1F865E79526F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{502FC686-46A8-4CEC-A171-1F865E79526F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{502FC686-46A8-4CEC-A171-1F865E79526F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{502FC686-46A8-4CEC-A171-1F865E79526F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

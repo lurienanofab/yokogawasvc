@@ -48,5 +48,10 @@ namespace YokogawaService
         {
             get { return _section.FolderPath; }
         }
+
+        public string HeaderPattern
+        {
+            get { return _section.HeaderPattern; }
+        }
     }
 }
