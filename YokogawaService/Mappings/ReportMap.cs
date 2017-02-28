@@ -14,24 +14,27 @@
    limitations under the License. 
 */
 
-using MongoDB.Bson;
-using System;
+using FluentNHibernate.Mapping;
 using YokogawaService.Models;
 
-namespace YokogawaService
+namespace YokogawaService.Mappings
 {
-    public class ImportFile
+    internal class ReportMap : ClassMap<Report>
     {
-        public ObjectId Id { get; set; }
-
-        public int Index { get; set; }
-
-        public string FilePath { get; set; }
-
-        public DateTime ImportDate { get; set; }
-
-        public SampleGranularity Granularity { get; set; }
-
-        public int LineCount { get; set; }
+        internal ReportMap()
+        {
+            Schema("Meter.dbo");
+            Table("Report");
+            Id(x => x.ReportID);
+            Map(x => x.ReportType);
+            Map(x => x.ReportName);
+            Map(x => x.Header);
+            Map(x => x.UnitCost);
+            Map(x => x.BorderColor);
+            Map(x => x.BackgroundColor);
+            Map(x => x.PointBorderColor);
+            Map(x => x.PointBackgroundColor);
+            Map(x => x.Active);
+        }
     }
 }

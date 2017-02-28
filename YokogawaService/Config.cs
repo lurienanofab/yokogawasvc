@@ -14,6 +14,7 @@
    limitations under the License. 
 */
 
+using System;
 using System.Configuration;
 
 namespace YokogawaService
@@ -39,11 +40,6 @@ namespace YokogawaService
             get { return _section.ServiceUrl; }
         }
 
-        public string ConnectionString
-        {
-            get { return _section.ConnectionString; }
-        }
-
         public string FolderPath
         {
             get { return _section.FolderPath; }
@@ -52,6 +48,37 @@ namespace YokogawaService
         public string HeaderPattern
         {
             get { return _section.HeaderPattern; }
+        }
+
+        public int HourGranularity
+        {
+            get
+            {
+                int result = _section.HourGranularity;
+
+                if (result <= 0)
+                    throw new Exception("HourGranularity must be between 1 and 24");
+
+                return result;
+            }
+        }
+
+        public int MinuteGranularity
+        {
+            get
+            {
+                int result = _section.MinuteGranularity;
+
+                if (result <= 0)
+                    throw new Exception("MinuteGranularity must be between 1 and 60");
+
+                return result;
+            }
+        }
+
+        public bool ShowSql
+        {
+            get { return _section.ShowSql; }
         }
     }
 }

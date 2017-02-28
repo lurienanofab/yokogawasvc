@@ -14,15 +14,22 @@
    limitations under the License. 
 */
 
-namespace YokogawaService.Models
+using FluentNHibernate.Mapping;
+using YokogawaService.Models;
+
+namespace YokogawaService.Mappings
 {
-    public class ServiceSummary
+    internal class FileImportMap: ClassMap<FileImport>
     {
-        public long TotalFiles { get; set; }
-        public long TotalImports { get; set; }
-        public long TotalDataRecords { get; set; }
-        public YokogawaFile LastFile { get; set; }
-        public FileImport LastImport { get; set; }
-        public int CurrentIndex { get; set; }
+        internal FileImportMap()
+        {
+            Schema("Meter.dbo");
+            Table("FileImport");
+            Id(x => x.FileImportID);
+            Map(x => x.FileIndex);
+            Map(x => x.FilePath);
+            Map(x => x.ImportDate);
+            Map(x => x.LineCount);
+        }
     }
 }

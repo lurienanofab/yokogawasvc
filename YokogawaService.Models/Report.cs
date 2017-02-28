@@ -14,25 +14,19 @@
    limitations under the License. 
 */
 
-using MongoDB.Bson;
-using System;
-
-namespace YokogawaService
+namespace YokogawaService.Models
 {
-    public class ImportFileData
+    public class Report
     {
-        public ObjectId Id { get; set; }
-
-        public int FileIndex { get; set; }
-
-        public int LineIndex { get; set; }
-
-        public DateTime TimeStamp { get; set; }
-
-        public string Header { get; set; }
-
-        public double Value { get; set; }
-
-        public DateTime ImportDate { get; set; }
+        public virtual int ReportID { get; set; }
+        public virtual string ReportType { get; set; }
+        public virtual string ReportName { get; set; }
+        public virtual string Header { get; set; }
+        public virtual double UnitCost { get; set; }
+        public virtual string BorderColor { get; set; }
+        public virtual string BackgroundColor { get; set; }
+        public virtual string PointBorderColor { get; set; }
+        public virtual string PointBackgroundColor { get; set; }
+        public virtual bool Active { get; set; }
     }
 }

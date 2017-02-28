@@ -18,17 +18,18 @@ using System;
 
 namespace YokogawaService.Models
 {
-    // This class is used to represet data from local physical files as well as remote imported data.
-    // for local files it is created directly from the file data. For remote data it is created from
-    // the FileImportData class. The only difference between this class and FileImportData is that
-    // FileImportData has an ObjectId property for Mongo.
-
-    public class YokogawaFileData
+    public class MeterData
     {
-        public int FileIndex { get; set; }
-        public int LineIndex { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string Header { get; set; }
-        public double Value { get; set; }
+        public virtual int MeterDataID { get; set; }
+
+        public virtual int FileIndex { get; set; }
+
+        public virtual int LineIndex { get; set; }
+
+        public virtual string Header { get; set; }
+
+        public virtual DateTime TimeStamp { get; set; }
+
+        public virtual double Value { get; set; }
     }
 }

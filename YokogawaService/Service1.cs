@@ -22,20 +22,19 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
+using YokogawaService.Models;
 
 namespace YokogawaService
 {
     public partial class Service1 : ServiceBase
     {
-        public static readonly string InstallServiceName = "AzureSync";
+        public static readonly string InstallServiceName = "YokogawaService";
 
         private IDisposable _webapp;
 
         private Timer _timer;
 
         private static object _lockerObject = new object();
-
-        private static int _nextIndex;
 
         public Service1()
         {
@@ -49,54 +48,82 @@ namespace YokogawaService
             if (!Directory.Exists(Config.Current.FolderPath))
                 Directory.CreateDirectory(Config.Current.FolderPath);
 
-            var filesController = new Controllers.FilesController();
-            _nextIndex = filesController.GetNextIndex();
-            Program.Log("[timer] next index: {0}", _nextIndex);
+            bool startTimer = true;
 
-            _timer = new Timer(new TimerCallback(TimeElapsed), null, 0, 10000);
+            if (startTimer)
+                _timer = new Timer(x => TimerElapsed(x), null, 0, 1000);
         }
 
-        private void TimeElapsed(object stateInfo)
+        private void TimerElapsed(object stateInfo)
         {
             if (Monitor.TryEnter(_lockerObject))
             {
                 try
                 {
-                    var yokoFile = FileUtility.GetFile(_nextIndex);
-
-                    if (yokoFile != null)
+                    using (var uow = DataManager.Current.StartUnitOfWork())
                     {
-                        Program.Log("[timer] next file: {0}", Path.GetFileName(yokoFile.FilePath));
-                        var filesController = new Controllers.FilesController();
-                        var model = filesController.ImportNextFile();
-
-                        if (model.LineCount == 0)
+                        lock (ImportIndex.Instance)
                         {
-                            // happens when there is no data found in the file
-                            Program.Log("[timer] no data found");
-                        }
-                        else
-                        {
-                            Program.Log("[timer] imported: {0} lines", model.LineCount);
-                        }
+                            YokogawaFile yokoFile = null;
 
-                        _nextIndex += 1;
+                            if (ImportIndex.Instance.Value == -1)
+                            {
+                                var importFileIndex = uow.GetMaxFileIndex().GetValueOrDefault(-1);
 
-                        Program.Log("[timer] next index: {0}", _nextIndex);
+                                if (importFileIndex == -1)
+                                {
+                                    yokoFile = FileUtility.GetFirstFile();
+
+                                    if (yokoFile != null)
+                                        ImportIndex.Instance.Value = yokoFile.Index;
+                                }
+                                else
+                                    ImportIndex.Instance.Value = importFileIndex + 1;
+                            }
+
+                            if (ImportIndex.Instance.Value == -1)
+                            {
+                                Program.Log("[timer] nothing to import, index is -1");
+                                return;
+                            }
+
+                            if (yokoFile == null)
+                                yokoFile = FileUtility.GetFile(ImportIndex.Instance.Value);
+
+                            if (yokoFile != null)
+                            {
+                                Program.Log("[timer] found file: {0}", Path.GetFileName(yokoFile.FilePath));
+
+                                var importFile = uow.ImportFile(yokoFile);
+
+                                if (importFile != null)
+                                {
+                                    if (importFile.LineCount == 0)
+                                    {
+                                        // happens when there is no data found in the file
+                                        Program.Log("[timer] no data found");
+                                    }
+                                    else
+                                    {
+                                        Program.Log("[timer] imported: {0} lines at {1:yyyy-MM-dd HH:mm:ss}", importFile.LineCount, importFile.ImportDate.ToLocalTime());
+                                    }
+                                }
+                                else
+                                {
+                                    Program.Log("[timer] null result from ImportManager.ImportFile");
+                                }
+
+                                ImportIndex.Instance.Increment();
+
+                                Program.Log("[timer] next index: {0}", ImportIndex.Instance.Value);
+                            }
+                        }
                     }
                 }
                 finally
                 {
                     Monitor.Exit(_lockerObject);
                 }
-            }
-        }
-
-        public static void SetNextIndex(int value)
-        {
-            lock (_lockerObject)
-            {
-                _nextIndex = value;
             }
         }
 

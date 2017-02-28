@@ -27,13 +27,6 @@ namespace YokogawaService
             set { this["serviceUrl"] = value; }
         }
 
-        [ConfigurationProperty("connectionString", IsRequired = true)]
-        public string ConnectionString
-        {
-            get { return (string)this["connectionString"]; }
-            set { this["connectionString"] = value; }
-        }
-
         [ConfigurationProperty("folderPath", IsRequired = true)]
         public string FolderPath
         {
@@ -46,6 +39,29 @@ namespace YokogawaService
         {
             get { return (string)this["headerPattern"]; }
             set { this["headerPattern"] = value; }
+        }
+
+        // default: every 15 minutes
+        [ConfigurationProperty("minuteGranularity", IsRequired = false, DefaultValue = 15)]
+        public int MinuteGranularity
+        {
+            get { return (int)this["minuteGranularity"]; }
+            set { this["minuteGranularity"] = value; }
+        }
+
+        // default: every hour
+        [ConfigurationProperty("hourGranularity", IsRequired = false, DefaultValue = 1)]
+        public int HourGranularity
+        {
+            get { return (int)this["hourGranularity"]; }
+            set { this["hourGranularity"] = value; }
+        }
+
+        [ConfigurationProperty("showSql", IsRequired = false, DefaultValue = false)]
+        public bool ShowSql
+        {
+            get { return (bool)this["showSql"]; }
+            set { this["showSql"] = value; }
         }
     }
 }

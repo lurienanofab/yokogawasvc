@@ -14,9 +14,7 @@
    limitations under the License. 
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Http;
 using YokogawaService.Models;
 
@@ -25,94 +23,73 @@ namespace YokogawaService.Controllers
     public class ImportsController : ApiController
     {
         [Route("imports")]
-        public IEnumerable<ImportFileModel> GetImports(int skip = 0, int take = 100)
+        public IEnumerable<FileImport> GetImports(int skip = 0, int limit = 100)
         {
-            return ImportManager.Current.QueryImportFiles().Skip(skip).Take(take).Select(ModelFactory.CreateImportFileModel);
+            return Request.GetUnitOfWork().AllImportFiles(skip, limit);
+        }
+
+        [Route("imports")]
+        public int DeleteFileImports()
+        {
+            return Request.GetUnitOfWork().DeleteFileImports();
         }
 
         [Route("imports/{index}")]
-        public ImportFileModel GetFileImport(int index)
+        public FileImport GetFileImport(int index)
         {
-            ImportFile fileImport = ImportManager.Current.GetImportFile(index);
-            return ModelFactory.CreateImportFileModel(fileImport);
+            return Request.GetUnitOfWork().GetFileImport(index);
         }
 
         [Route("imports/{index}")]
         public bool DeleteFileImport(int index)
         {
-            return ImportManager.Current.DeleteFileImport(index);
+            return Request.GetUnitOfWork().DeleteFileImport(index);
         }
 
         [Route("imports/{index}/data")]
-        public IEnumerable<YokogawaFileData> GetFileImportData(int index)
+        public IEnumerable<MeterData> GetMeterData(int index)
         {
-            var query = ImportManager.Current.QueryImportFileData().Where(x => x.FileIndex == index);
-            return query.Select(ModelFactory.CreateYokogawaFileData);
+            return Request.GetUnitOfWork().QueryMeterData(index);
         }
 
         [Route("imports/data")]
-        public IEnumerable<YokogawaFileData> GetData(int skip = 0, int take = 100)
+        public IEnumerable<MeterData> GetData(int skip = 0, int limit = 100)
         {
-            return ImportManager.Current.QueryImportFileData().Skip(skip).Take(take).Select(ModelFactory.CreateYokogawaFileData);
+            return Request.GetUnitOfWork().AllMeterData(skip, limit);
         }
 
         [HttpPost, Route("imports/data")]
-        public IEnumerable<YokogawaFileData> QueryFileImportData([FromBody] DataQueryCriteria criteria)
+        public IEnumerable<MeterData> QueryFileImportData([FromBody] DataQueryCriteria criteria)
         {
-            var query = ImportManager.Current.QueryImportFileData(criteria);
-            return query.Select(ModelFactory.CreateYokogawaFileData);
+            return Request.GetUnitOfWork().QueryMeterData(criteria);
         }
 
         [Route("imports/last")]
-        public ImportFileModel GetLastImport()
+        public FileImport GetLastImport()
         {
-            var importIndex = ImportManager.Current.GetIndex();
+            var index = Request.GetUnitOfWork().GetMaxFileIndex();
 
-            if (importIndex != null)
-            {
-                ImportFile importFile = ImportManager.Current.GetImportFile(importIndex.Index);
-                return ModelFactory.CreateImportFileModel(importFile);
-            }
-
-            return null;
+            if (index.HasValue)
+                return Request.GetUnitOfWork().GetFileImport(index.Value);
+            else
+               return null;
         }
 
         [Route("imports/last/data")]
-        public IEnumerable<YokogawaFileData> GetLastImportData()
+        public IEnumerable<MeterData> GetLastMeterData()
         {
-            var importIndex = ImportManager.Current.GetIndex();
+            var index = Request.GetUnitOfWork().GetMaxFileIndex();
 
-            if (importIndex != null)
-            {
-                return GetFileImportData(importIndex.Index);
-            }
-
-            return null;
-        }
-
-        [Route("imports/index")]
-        public int GetIndex()
-        {
-            var importIndex = ImportManager.Current.GetIndex();
-
-            if (importIndex == null)
-                return -1;
+            if (index.HasValue)
+                return Request.GetUnitOfWork().QueryMeterData(index.Value);
             else
-                return importIndex.Index;
+                return null;
         }
 
         [Route("imports/index")]
-        public void PutIndex(int index)
+        public int? GetIndex()
         {
-            DeleteIndex();
-            ImportManager.Current.SetIndex(null, index);
-            Service1.SetNextIndex(index);
-        }
-
-        [Route("imports/index")]
-        public bool DeleteIndex()
-        {
-            return ImportManager.Current.DeleteIndex();
+            return Request.GetUnitOfWork().GetMaxFileIndex();
         }
     }
 }

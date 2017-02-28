@@ -121,21 +121,11 @@ namespace YokogawaService
             }
         }
 
-        public static SampleGranularity GetGranularity(string gran)
+        public static bool TakeSample(DateTime timeStamp)
         {
-            return (SampleGranularity)Enum.Parse(typeof(SampleGranularity), gran, true);
-        }
-
-        public static bool TakeSample(DateTime timeStamp, SampleGranularity gran)
-        {
-            bool result = false;
-
-            if (gran == SampleGranularity.Day)
-                result = timeStamp.Hour == 0 && timeStamp.Minute == 0 && timeStamp.Second == 0;
-            else if (gran == SampleGranularity.Hour)
-                result = timeStamp.Minute == 0 && timeStamp.Second == 0;
-            else if (gran == SampleGranularity.Minute)
-                result = timeStamp.Second == 0;
+            bool result = timeStamp.Second == 0
+                && timeStamp.Hour % Config.Current.HourGranularity == 0
+                && timeStamp.Minute % Config.Current.MinuteGranularity == 0;
 
             return result;
         }

@@ -18,20 +18,16 @@ using System;
 
 namespace YokogawaService.Models
 {
-    public enum SampleGranularity
+    public class FileImport
     {
-        None = 0,
-        Minute = 1,
-        Hour = 2,
-        Day = 3
-    }
+        public virtual int FileImportID { get; set; }
 
-    public class ImportFileModel
-    {
-        public int Index { get; set; }
-        public string FilePath { get; set; }
-        public DateTime ImportDate { get; set; }
-        public int LineCount { get; set; }
-        public SampleGranularity Granularity { get; set; }
+        public virtual int FileIndex { get; set; }
+
+        public virtual string FilePath { get; set; }
+
+        public virtual DateTime ImportDate { get; set; }
+
+        public virtual int LineCount { get; set; }
     }
 }

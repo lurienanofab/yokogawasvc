@@ -14,16 +14,18 @@
    limitations under the License. 
 */
 
-using MongoDB.Bson;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
-namespace YokogawaService
+namespace YokogawaService.Models
 {
-    /// <summary>
-    /// Tracks the last imported Index to determine the next value.
-    /// </summary>
-    public class ImportFileIndex
+
+    public class ReportModel
     {
-        public ObjectId Id { get; set; }
-        public int Index { get; set; }
+        [JsonProperty("labels")]
+        public IEnumerable<string> Labels { get; set; }
+
+        [JsonProperty("datasets")]
+        public IEnumerable<ReportDataset> Datasets { get; set; }
     }
 }

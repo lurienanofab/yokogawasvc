@@ -14,9 +14,7 @@
    limitations under the License. 
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Http;
 using YokogawaService.Models;
 
@@ -44,100 +42,32 @@ namespace YokogawaService.Controllers
         }
 
         [Route("files/{index}/data")]
-        public IEnumerable<YokogawaFileData> GetFileData(int index, string gran = "day")
+        public IEnumerable<MeterData> GetFileData(int index)
         {
             YokogawaFile yokoFile = FileUtility.GetFile(index);
-            return yokoFile.GetData(FileUtility.GetGranularity(gran));
+            return yokoFile.GetData();
         }
 
         [HttpPost, Route("files/{index}/data")]
-        public IEnumerable<YokogawaFileData> QueryFileData([FromBody] DataQueryCriteria criteria, int index, string gran = "day")
+        public IEnumerable<MeterData> QueryFileData([FromBody] DataQueryCriteria criteria, int index)
         {
             YokogawaFile yokoFile = FileUtility.GetFile(index);
-            return yokoFile.QueryData(FileUtility.GetGranularity(gran), criteria);
+            return yokoFile.QueryData(criteria);
         }
 
         [HttpPost, Route("files/{index}/import")]
-        public ImportFileModel ImportFile(int index, string gran = "day")
+        public FileImport ImportFile(int index)
         {
-            YokogawaFile yokoFile;
-
-            if (index == -1)
-                yokoFile = FileUtility.GetFirstFile();
-            else
-                yokoFile = FileUtility.GetFile(index);
-
-            if (yokoFile == null) return null;
-
-            ImportFile fileImport = ImportManager.Current.GetImportFile(index);
-
-            if (fileImport == null)
-                fileImport = ImportManager.Current.ImportFile(yokoFile, FileUtility.GetGranularity(gran));
-
-            return ModelFactory.CreateImportFileModel(fileImport);
-        }
-
-        [HttpGet, Route("files/next")]
-        public YokogawaFile GetNextFile()
-        {
-            int index = GetNextIndex();
-            return GetFile(index);
-        }
-
-        [HttpGet, Route("files/next/content")]
-        public string GetNextFileContent()
-        {
-            int index = GetNextIndex();
-            return GetFileContent(index);
-        }
-
-        [HttpGet, Route("files/next/data")]
-        public IEnumerable<YokogawaFileData> GetNextFileData(string gran = "day")
-        {
-            int index = GetNextIndex();
-            return GetFileData(index, gran);
-        }
-
-        [HttpPost, Route("files/next/data")]
-        public IEnumerable<YokogawaFileData> QueryNextFileData([FromBody] DataQueryCriteria criteria, string gran = "day")
-        {
-            int index = GetNextIndex();
-            return QueryFileData(criteria, index, gran);
-        }
-
-        [HttpPost, Route("files/next/import")]
-        public ImportFileModel ImportNextFile(string gran = "day")
-        {
-            var lastIndex = ImportManager.Current.GetIndex();
-            int nextIndex = GetNextIndex(lastIndex);
-
-            var result = ImportFile(nextIndex, gran);
-
-            if (result != null)
-                ImportManager.Current.SetIndex(lastIndex, result.Index);
-
-            return result;
-        }
-
-        [Route("files/next/index")]
-        public int GetNextIndex()
-        {
-            var lastIndex = ImportManager.Current.GetIndex();
-            return GetNextIndex(lastIndex);
-        }
-
-        private int GetNextIndex(ImportFileIndex lastIndex)
-        {
-            if (lastIndex == null)
+            using (var uow = DataManager.Current.StartUnitOfWork())
             {
-                var firstFile = FileUtility.GetFirstFile();
-                if (firstFile == null)
-                    return -1;
-                else
-                    return firstFile.Index;
+                YokogawaFile yokoFile = FileUtility.GetFile(index);
+
+                if (yokoFile == null) return null;
+
+                FileImport result = uow.ImportFile(yokoFile);
+
+                return result;
             }
-            else
-                return lastIndex.Index + 1;
         }
     }
 }

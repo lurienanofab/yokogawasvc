@@ -25,12 +25,13 @@ namespace YokogawaService
 {
     public static class YokogawaFileExtensions
     {
-        public static YokogawaFileData CreateData(this YokogawaFile yokoFile, int lineIndex, DateTime timeStamp, string header, double value)
+        public static MeterData CreateData(this YokogawaFile yokoFile, int lineIndex, DateTime timeStamp, string header, double value)
         {
             if (yokoFile == null) return null;
 
-            return new YokogawaFileData
+            return new MeterData
             {
+                 
                 FileIndex = yokoFile.Index,
                 LineIndex = lineIndex,
                 TimeStamp = timeStamp,
@@ -45,7 +46,7 @@ namespace YokogawaService
             return File.ReadAllText(yokoFile.FilePath);
         }
 
-        public static IEnumerable<YokogawaFileData> GetData(this YokogawaFile yokoFile, SampleGranularity gran)
+        public static IEnumerable<MeterData> GetData(this YokogawaFile yokoFile)
         {
             if (yokoFile != null)
             {
@@ -66,7 +67,7 @@ namespace YokogawaService
                         if (DateTime.TryParse(datestr, out date))
                         {
                             //we only take the sample at midnight, otherwise there are way too many rows
-                            if (FileUtility.TakeSample(date, gran))
+                            if (FileUtility.TakeSample(date))
                             {
                                 string[] items = line.Split(',');
                                 if (items.Length == headers.Length)
@@ -91,9 +92,9 @@ namespace YokogawaService
             }
         }
 
-        public static IEnumerable<YokogawaFileData> QueryData(this YokogawaFile yokoFile, SampleGranularity gran, DataQueryCriteria criteria)
+        public static IEnumerable<MeterData> QueryData(this YokogawaFile yokoFile, DataQueryCriteria criteria)
         {
-            var data = GetData(yokoFile, gran);
+            var data = GetData(yokoFile);
 
             if (data == null) return null;
 
