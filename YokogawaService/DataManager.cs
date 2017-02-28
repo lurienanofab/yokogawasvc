@@ -44,7 +44,7 @@ namespace YokogawaService
             _sessionFactory = Fluently.Configure()
                 .Database(() =>
                 {
-                    var result = MsSqlConfiguration.MsSql2012.ConnectionString(c => c.FromConnectionStringWithKey("cnSselData"));
+                    var result = MsSqlConfiguration.MsSql2012.ConnectionString(c => c.FromConnectionStringWithKey("YokogawaData"));
 
                     if (Config.Current.ShowSql)
                         result.ShowSql();

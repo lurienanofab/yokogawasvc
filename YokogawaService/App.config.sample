@@ -21,7 +21,17 @@
     <section name="yokogawasvc" type="YokogawaService.YokogawaServiceConfigSection, YokogawaService" />
   </configSections>
 
-  <yokogawasvc folderPath="C:\yokogawa" serviceUrl="http://127.0.0.1:23032" connectionString="xxxxx" />
+  <yokogawasvc folderPath="C:\yokogawa" serviceUrl="http://127.0.0.1:23032" headerPattern="\[Liters\] - Max$" />
+
+  <connectionStrings>
+    <add name="YokogawaData" connectionString="Server=*****;Database=*****;User Id=*****;Password=*****" />
+  </connectionStrings>
+
+  <appSettings>
+    <add key="cors:Origins" value="*" />
+    <add key="cors:Headers" value="*" />
+    <add key="cors:Methods" value="GET, POST, OPTIONS, PUT, DELETE" />
+  </appSettings>
 
   <startup>
     <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.2" />
