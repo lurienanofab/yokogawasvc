@@ -104,6 +104,10 @@ namespace YokogawaService
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Program.Log("[timer] ERROR: {0}", ex.Message);
+                }
                 finally
                 {
                     Monitor.Exit(_lockerObject);
