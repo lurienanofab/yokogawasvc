@@ -233,6 +233,9 @@ namespace YokogawaService
 
         public ReportModel RunReport(DataQueryCriteria criteria, string reportType)
         {
+            if (criteria == null)
+                throw new Exception("Criteria is required.");
+
             if (!criteria.StartDate.HasValue)
                 throw new Exception("Criteria must have a StartDate value.");
 
