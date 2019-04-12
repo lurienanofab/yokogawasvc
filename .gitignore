@@ -3,6 +3,11 @@ bin/
 obj/
 packages/
 TestResults/
+PublishProfiles/
 *.suo
 *.user
-YokogawaService/App.config
+[wW]eb.config
+[wW]eb.*.config
+[aA]pp.config
+[aA]pp.*.config
+!Views/[wW]eb.config
